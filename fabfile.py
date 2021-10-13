@@ -227,6 +227,35 @@ def upgrade_binary(conn):
     # 3. restart binary
     conn.run(f'dtach -n `mktemp -u /tmp/dtach.XXXX` sh /home/ubuntu/cmd.sh')
 
+# ======================================================================================
+#                                       flooder
+# ======================================================================================
+
+
+@task
+def setup_flooder(conn):
+    conn.run(
+        "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash")
+    conn.run("echo installed nvm > setup_flooder.log")
+
+    conn.run("/home/ubuntu/.nvm/nvm.sh && nvm install")
+    conn.run("echo installed node > setup_flooder.log")
+
+    conn.run("npm install yarn")
+    conn.run("echo installed yarn > setup_flooder.log")
+
+    conn.run("npm run build ")
+    conn.run("echo built > setup_flooder.log")
+
+    conn.run("ln -s '$(pwd)'/dist/index.js /usr/local/bin/sub-flood")
+    conn.run("echo finished > setup_flooder.log")
+
+
+@task
+def run_flooder(conn):
+    # Run script with
+    conn.run("node dist/index.js")
+
 
 # ======================================================================================
 #                                        misc
