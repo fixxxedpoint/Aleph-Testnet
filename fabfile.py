@@ -114,6 +114,16 @@ def send_binary(conn):
     conn.put(f'{zip_file}', '.')
     conn.run(f'unzip -o /home/ubuntu/{zip_file} && rm {zip_file}')
 
+@task
+def send_extras(conn):
+    '''Zips, sends and unzips the extras dir'''
+    zip_file = 'extras.zip'
+    cmd = f'zip -j {zip_file} extras'
+    call(cmd.split())
+    conn.put(f'{zip_file}', '.')
+    conn.run(f'unzip -o /home/ubuntu/{zip_file} && rm {zip_file}')
+
+
 # ======================================================================================
 #                                       nginx
 # ======================================================================================
@@ -234,20 +244,23 @@ def upgrade_binary(conn):
 
 @task
 def setup_flooder(conn):
-    conn.run(
-        "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash")
-    conn.run("echo installed nvm > setup_flooder.log")
+    conn.run("$HOME/extras/build.sh >./setup_flooder.log 2>&1 && echo installed > setup_flooder.log")
+    # conn.run(
+    #     "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash")
+    # conn.run("echo installed nvm > setup_flooder.log")
+    # conn.run("""
+    #     export NVM_DIR=\"$HOME/.nvm
+    #     [ -s \"$NVM_DIR/nvm.sh\" ] && \\. \"$NVM_DIR/nvm.sh\"
+    #     [ -s \"$NVM_DIR/bash_completion\" ] && \\. \"$NVM_DIR/bash_completion\""""
+    #          )
 
-    conn.run("/home/ubuntu/.nvm/nvm.sh && nvm install")
-    conn.run("echo installed node > setup_flooder.log")
+    # conn.run("nvm install")
+    # conn.run("echo installed node > setup_flooder.log")
 
-    conn.run("npm install yarn")
-    conn.run("echo installed yarn > setup_flooder.log")
+    # conn.run("npm install yarn")
+    # conn.run("echo installed yarn > setup_flooder.log")
 
-    conn.run("npm run build ")
-    conn.run("echo built > setup_flooder.log")
-
-    conn.run("ln -s '$(pwd)'/dist/index.js /usr/local/bin/sub-flood")
+    # conn.run("npm run build ")
     conn.run("echo finished > setup_flooder.log")
 
 
