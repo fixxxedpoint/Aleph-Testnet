@@ -179,7 +179,11 @@ def create_dispatch_cmd(conn,  pid):
         '--prometheus-port 9615 '\
         '--no-telemetry '\
         '--rpc-cors all '\
-        '--rpc-methods Safe '\
+        '--unsafe-rpc-external '\
+        '--rpc-methods unsafe '\
+        '--ws-external '\
+        '--pool-limit 81920 '\
+        '--pool-kbytes 204800 '\
         f'--node-key-file data/{auth}/p2p_secret '\
         f'--reserved-nodes {reserved_nodes} '\
         '-lafa=debug '\

@@ -436,7 +436,9 @@ def upgrade_binary(regions, tag='dev', delay=0):
             input("to proceed, press any key")
 
 
-def setup_flooder(n_flooders, regions, instance_type, tag):
+def setup_flooder(n_flooders, regions, instance_type, nodes_tag, tag=None):
+    if tag is None:
+        tag = nodes_tag + "-flood"
     nhpr = n_parties_per_regions(n_flooders, regions)
     parallel = n_flooders > 1
     launch_new_instances(nhpr, instance_type, 8, tag)
@@ -450,11 +452,11 @@ def setup_flooder(n_flooders, regions, instance_type, tag):
     run_task('send-extras', regions, parallel, tag)
     run_task('setup-flooder', regions, True, tag)
 
-    ip_list = instances_ip(regions, True, tag)
+    ip_list = instances_ip(regions, True, nodes_tag)
     ip_list += instances_ip(regions, True, tag)
 
     # add flood machines to nodes firewall
-    allow_traffic(regions, ip_list, True, tag)
+    allow_traffic(regions, ip_list, True, nodes_tag)
 
 
 def setup_infrastructre(n_parties, chain='dev', regions=use_regions(), instance_type='t2.micro',
