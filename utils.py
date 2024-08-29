@@ -332,7 +332,7 @@ def bootstrap_nodes(account_ids, chain, **custom_flags):
 def bootstrap_chain(account_ids, chain, benchmark_config=None, rich_accounts=[], **custom_flags):
     ''' Create the chain spec. '''
 
-    cmd = './bin/aleph-node bootstrap-chain --base-path data'
+    cmd = './bin/chain-bootstrapper bootstrap-chain --base-path data'
     if chain == 'dev':
         cmd += f' --chain-id a0dnet1 --n-members {len(account_ids)}'
     else:
@@ -347,8 +347,18 @@ def bootstrap_chain(account_ids, chain, benchmark_config=None, rich_accounts=[],
         for (flag, value) in flags.items():
             cmd += f' {flag} {value}'
 
-    chainspec = run(cmd.split(), capture_output=True)
-    chainspec = json.loads(chainspec.stdout)
+    cmd += ' --raw'
+    # cmd += ' > chainspec.json'
+    print(cmd)
+    # chainspec = run(cmd.split(), capture_output=True)
+    chainspec = open('chainspec.json', 'w')
+    run(cmd.split(), capture_output=False, stdout=chainspec)
+    # print("chainspec: ")
+    # print(chainspec)
+    # chainspec = json.loads(chainspec.stdout)
+
+    chainspec = open('chainspec.json')
+    chainspec = json.load(chainspec)
 
     # TODO tmp workaround
     if chain != 'dev':
@@ -358,19 +368,19 @@ def bootstrap_chain(account_ids, chain, benchmark_config=None, rich_accounts=[],
 
     sudo = generate_accounts(
         1, 'gen', 'accounts/sudo_sk', 'accounts/sudo_aid')[0]
-    chainspec['genesis']['runtime']['sudo']['key'] = sudo
-    sudo_money = 10 ** 20
-    chainspec['genesis']['runtime']['balances']['balances'].append(
-        (sudo, sudo_money))
-    for account in rich_accounts:
-        chainspec['genesis']['runtime']['balances']['balances'].append(
-            (account, 10 ** 17))
+    # chainspec['genesis']['runtime']['sudo']['key'] = sudo
+    # sudo_money = 10 ** 20
+    # chainspec['genesis']['runtime']['balances']['balances'].append(
+    #     (sudo, sudo_money))
+    # for account in rich_accounts:
+    #     chainspec['genesis']['runtime']['balances']['balances'].append(
+    #         (account, 10 ** 17))
 
-    prepare_vesting(chainspec)
+    # prepare_vesting(chainspec)
 
-    if benchmark_config is not None:
-        prepare_benchmark_accounts(chainspec, benchmark_config['n_of_accounts'],
-                                  benchmark_config['azero_amount'])
+    # if benchmark_config is not None:
+    #     prepare_benchmark_accounts(chainspec, benchmark_config['n_of_accounts'],
+    #                               benchmark_config['azero_amount'])
 
     with open('chainspec.json', 'w') as f:
         json.dump(chainspec, f, indent=4)

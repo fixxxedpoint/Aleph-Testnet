@@ -155,7 +155,7 @@ def get_node_flags(auth, bootnodes, addr):
         '--validator',
         '--prometheus-external',
         '--no-telemetry',
-        '--unsafe-ws-external',
+        # '--unsafe-ws-external',
         '--unsafe-rpc-external',
     ]
     debug_flags = [
@@ -167,7 +167,7 @@ def get_node_flags(auth, bootnodes, addr):
         '--chain': 'chainspec.json',
         '--base-path': f'data/{auth}',
         '--rpc-port': '9933',
-        '--ws-port': '9944',
+        # '--ws-port': '9944',
         '--port': '30334',
         '--validator-port': '30344',
         '--public-validator-addresses': f'{addr}:30344',
