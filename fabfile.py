@@ -207,6 +207,7 @@ def create_dispatch_cmd(conn, pid):
     flags = get_node_flags(auth, bootnodes, addr)
 
     cmd = f'/home/ubuntu/aleph-node {flags} 2> {pid}.log'
+    cmd = f'systemd-run --scope -p MemoryMax=15G -p MemorySwapMax=0M --user ' + cmd
     conn.run("echo > /home/ubuntu/cmd.sh")
     conn.run(f"sed -i '$a{cmd}' /home/ubuntu/cmd.sh")
 
